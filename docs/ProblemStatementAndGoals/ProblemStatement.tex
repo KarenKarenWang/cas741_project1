@@ -3,54 +3,60 @@
 \usepackage{tabularx}
 \usepackage{booktabs}
 
-\title{Problem Statement and Goals\\\progname}
+\title{Economize transmission energy\\\progname}
 
-\author{\authname}
+\author{\ Ning Wang}
 
-\date{}
+\date{Jan,20th,2023}
 
-\input{../Comments}
-\input{../Common}
+
+
 
 \begin{document}
 
 \maketitle
 
-\begin{table}[hp]
-\caption{Revision History} \label{TblRevisionHistory}
-\begin{tabularx}{\textwidth}{llX}
-\toprule
-\textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
-\midrule
-Date1 & Name(s) & Description of changes\\
-Date2 & Name(s) & Description of changes\\
-... & ... & ...\\
-\bottomrule
-\end{tabularx}
-\end{table}
+%\begin{table}[hp]
+%\caption{Revision History} \label{TblRevisionHistory}
+%\begin{tabularx}{\textwidth}{llX}
+%\toprule
+%\textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
+%\midrule
+%Date1 & Name(s) & Description of changes\\
+%Date2 & Name(s) & Description of changes\\
+%... & ... & ...\\
+%\bottomrule
+%\end{tabularx}
+%\end{table}
 
 \section{Problem Statement}
 
-\wss{You should check your problem statement with the
-\href{https://github.com/smiths/capTemplate/blob/main/docs/Checklists/ProbState-Checklist.pdf}
-{problem statement checklist}.}
-\wss{You can change the section headings, as long as you include the required information.}
+Due to Covid-19 pandemic, people considering the importance of integration of rural hospitals with the digital world which additional data center requires more energy consumption.
+Using energy more efficiently is one of the fastest, most cost-effective ways to save money, reduce greenhouse gas emissions, create jobs, and meet growing energy demand. The many benefits of energy efficiency include Environmental, Economic, and Utility systems Benefits. Data centers use about 1\% of the electricity in the world. Power lost always up to 15\% during  transmission and distribution with distance between electrical consumers and electrical generations. The idea come up with saving transmission energy is also critical.
 
-\subsection{Problem}
+
 
 \subsection{Inputs and Outputs}
-
-\wss{Characterize the problem in terms of ``high level'' inputs and outputs.  
-Use abstraction so that you can avoid details.}
+A model of moving data centers where electrical consumers are closer to electrical generation will be built.
+The traditional approach is moving energy closer to data centers will be displaced.
+ The model would include electrical power and computation loads on each node. The model investigates the potential benefits of moving computation to where there is an excess of energy. Some simplifying assumptions make the model feasible and will output the rough energy saved by different distances. 
 
 \subsection{Stakeholders}
+The primary stakeholders of this Project are,
+\begin{itemize}
 
+\item Dr. Spencer Smith
+\item Students of the class CAS 741
+\item Dr. William Farmer
+\item All contributors to the meta grid project
+\end{itemize}
 \subsection{Environment}
-
-\wss{Hardware and software}
+The software application in this project is designed to execute on  Windows 10 and, macOS 10.13 and greater.
+\subsection{Hardware and Software}
+MATLAB(SimuLink) and PYTHON
 
 \section{Goals}
 
-\section{Stretch Goals}
+The model will investigates the potential benefits of moving computation instead of electricity generation and will output the rough energy saved by different distances. The project will be part of Dr.Farmer and Dr. Smith  Metagrid project and support for rural hospital add data computing facilities.
 
 \end{document}
