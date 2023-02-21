@@ -1,0 +1,473 @@
+\documentclass[12pt, titlepage]{article}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{pdflscape}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+    citecolor=black,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+\usepackage[round]{natbib}
+%\usepackage{refcheck}
+\input{Comments}
+\input{Common}
+
+\begin{document}
+
+\title{Project Title: System Verification and Validation Plan for Minimization Analysis} 
+\author{Ning Wang}
+\date{\today}
+	
+\maketitle
+
+\pagenumbering{roman}
+
+\section{Revision History}
+
+\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
+\toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
+\midrule
+Oct 30, 2020 & 1.0 & First Draft\\
+Dec 20, 2020 & 1.1 & Revision 1\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+
+\tableofcontents
+
+\listoftables
+
+\listoffigures
+
+\newpage
+
+\section{Symbols, Abbreviations and Acronyms}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l l} 
+  \toprule		
+  \textbf{symbol} & \textbf{description}\\
+  \midrule 
+  FR & Functional Requirement\\
+  MG & Module Guide\\
+  MIS & Module Interface Specification\\
+  NFR & Non-Functional Requirement\\
+  RSSC & Sadio SignalStrength Calculator\\
+  SRS & Software Requirement Specification\\
+  T & Test\\
+  VV & Validation and Verification\\
+  \bottomrule
+\end{tabular}\\
+
+
+
+\pagenumbering{arabic}
+
+This document records and presents the verification and validation plan for minimization analysis
+to help ensure the program meets the requirements. General information a quick recall of the minimization analysis’s background is given in \autoref{GeneralInfo}. 
+\autoref{plan} provides a plan for verification and \autoref{systd} describes 
+the system tests, including tests for functional requirements and tests for non-functional requirements.
+\newpage
+
+\section{General Information}
+\label{GeneralInfo}
+
+\subsection{Summary}
+
+The software to test is MATLAB. The purpose of minimization analysis is to simulate the minimized cost and relocate the computational power for each data center. The inputs are defined by the user and find the analytical distribution of computational power for the user.
+
+\subsection{Objectives}
+
+The objective of this document is to build confidence in the software's level of correctness. To reach this objective, all functional and non-functional requirements will be tested following the descriptions in this document.
+
+\subsection{Relevant Documentation}
+
+\begin{itemize}
+	\item 
+	\href{https://github.com/XingzhiMac/CAS741-Proj/blob/master/docs/SRS/SRS.pdf}
+	{SRS} 
+\end{itemize}
+
+\section{Verification and Validation Plan}\label{plan}
+Verification and Validation of minimization analysis include automated testing at the module level, the system level, and the integration level. This document will additionally propose continuous integration.	
+\subsection{Verification and Validation Team}
+
+\begin{itemize}
+	\item Author: Ning Wang
+\end{itemize}
+
+\begin{itemize}
+	\item Primary Reviewer: Maryam
+\end{itemize}
+
+\begin{itemize}
+	\item Reviewer: Jason
+\end{itemize}
+
+\begin{itemize}
+	\item Dr. Spencer Smith
+\end{itemize}
+
+\subsection{SRS Verification Plan}
+
+SRS will be done by team members reviewing the document. Team members can put any comments, suggestions or questions in Project's Github repository as issues.
+The author will respond to the issues and make modifications when needed.
+
+\subsection{Design Verification Plan}
+
+Design verification will be done by team members, by reviewing whether the steps 
+of calculation in the software follows the physical model in SRS or not. 
+
+\subsection{Implementation Verification Plan}
+
+Implementation verification will be done by testing all the functional and non-functional requirements. Descriptions of the tests can be found in \autoref{tfr} and \autoref{tnfr}. 
+In addition, we will undergo static verification by checking
+all the codes built with MATLAB. The author will also conduct unit testing for modules
+within the testing scope. Details for unit testing can be found in \autoref{unittest}.
+
+
+\subsection{Automated Testing and Verification Tools}
+\begin{itemize}
+	\item Python 
+\end{itemize}
+\begin{itemize}
+	\item MATLAB
+\end{itemize}
+
+\subsection{Software Validation Plan}
+
+Validation is the validation of the requirements. Validation compares experimental data to output from minimization analysis to confirm or reject the problem model. Validation considers the applicability of the equations and assumptions to the problem space.
+
+
+\section{System Test Description}
+\label{systd}
+	
+\subsection{Tests for Functional Requirements}
+\label{tfr}
+
+Functional requirements for this project are given in 
+\href{https://github.com/KarenKarenWang/cas741_project1/blob/main/docs/SRS/SRS.pdf}
+{SRS} section 5.1. There are 7 functional requirements for the minimization analysis model, from R1 to R7.
+R1, R2 and R3 are corresponding to inputs, while R6 and R7 are corresponding to outputs.
+\autoref{area1} describes the input tests for R1, R2 and R3; and \autoref{area2} 
+describes the output tests for R6 and R7.
+
+\subsubsection{Input}\label{Ainput}
+\label{area1}
+
+This test verifies the following requirements: \\
+\indent  R1: Requirements for the inputs that are supplied by the user. This information has to be
+explicit.\\
+\indent  R2: The program shall notify the user if the input is out of bounds.\\
+\indent R3: User should keep input validate data type.\\		
+\subsubsection{Area of Testing1 - Fun. Req. 1 .2 and Fun. Req. 3 - Inputs}\label{test_input}
+
+Functional Requirement 1 states The inputs that are supplied by the user. This information has to be
+explicit.
+
+Functional Requirement 2 states: The program shall notify the user if an input value is illegal or out of bounds.
+
+This area of tests will address the inputs to the program. The following tests include  tests with inputs that are within bounds to test Fun. Req. 1 and tests with inputs that are out of bounds to test Fun. Req. 2.
+
+\paragraph{Tests for Fun. Req. 1, 2 and 3}
+
+\begin{enumerate}
+
+\item{test - Normal Input using defaults}\\
+
+Control: Automatic
+					
+Initial State: Pending input
+					
+Input: various distances di, using default inputs boundaries 
+					
+Output: The program should run with no error, (the correctness of the solution is addressed in other tests)
+
+Test Case Derivation: Fun. Req. 1, table 1
+					
+How the test will be performed: A set of distances like in table 1, they are all typically normal numbers, the system will perform under default constrain and the program will run and output with the minimize plan. 
+
+\item{test - Normal Input with user entered pricing}\\
+
+Control: Automatic
+					
+Initial State: Pending input
+					
+Input: A set of distances and different pricing as default,
+					
+Output: The program should run with no error, (the correctness of the solution is addressed in other tests)
+
+Test Case Derivation: Fun. Req. 1
+					
+How the test will be performed: The system should use the input pricing to calculate the minimization value and output the distributed value. This time will conduct a set of two tests, one with default pricing, and another with tester-entered pricing, these testing will be with the same input distances. Tester will compare both results to observe the pricing unit affects the distribution of computational power for data centers.
+
+\item{test - Out of Bounds distances} \\
+
+Control: Manual
+					
+Initial State: Pending input
+					
+Input: distances which are out of the distances limit. (Table 2)
+					
+Output: The program should return an error. 
+
+Test Case Derivation: Fun. Req. 2
+					
+How test will be performed: The program will set the boundary for input, in this case, some distance out of the boundary will input like in table 2, the tester will expect to see the data center within the boundary will be assigned computational power, those out of boundary will return an error.
+					
+\item{test- Out of Bounds for not reaching target consumption}
+
+Control: Manual
+					
+Initial State: Pending input
+					
+Input: too less data centers to allocate target computational power
+					
+Output: The program should return an error about the analysis range
+
+Test Case Derivation: Fun. Req. 2
+
+How the test will be performed: In this test will assume up bound for the power of each data center that is capable. Tester will assign each data center with exceed the power and expect the program will return an error.
+
+\item{test- wrong data type}\\
+Control: Manual
+					
+Initial State: Pending input
+					
+Input: input distances with the wrong data type
+					
+Output: The program should return a warning and stop running.
+
+Test Case Derivation: Fun. Req. 3
+
+How the test will be performed: Tester will try a different type of data as input and expect to see the program stop running.
+
+\end{enumerate}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+     data center & distance(km) & total power consumption(MW) \\
+		\hline
+		\name{1}  & 1 & 100 \\ \hline
+		\name{2}  & 5 & \\ \hline
+		\name{3}  & 50 & \\ \hline
+		\name{4}  & 500 & \\ \hline
+		\name{5}  & 2000 & \\ \hline
+	\end{tabular}
+	\caption{Sample number of input for input test one}
+	\label{Table:A_trace}
+\end{table}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+     data center & distance(km) & total power consumption(MW) \\
+		\hline
+		\name{1}  & 1 & 100 \\ \hline
+		\name{2}  & 5 & \\ \hline
+		\name{3}  & 50 & \\ \hline
+		\name{4}  & 5000 & \\ \hline
+		\name{5}  & 20000 & \\ \hline
+	\end{tabular}
+	\caption{Sample number of input which some of them out of boundary}
+	\label{Table:A_trace}
+\end{table}
+
+\newpage
+\subsubsection{Output}\label{Aoutput}
+\label{area2}
+
+This test verifies the following requirements: \\
+\indent R6: The program output the optimal plan for end users.\\
+\indent R7: The output should allocate the computing power of data centers with their capable size\textsuperscript{\cite{sedano2004electricity}}\\
+
+\paragraph{Output Test}
+
+\begin{enumerate}
+
+\item{Simple number of data centers valid output\\}
+
+Control: Manual
+					
+Initial State: Pending Input
+					
+Input: Data centers number which exceeds needed.
+
+Output: Some data centers will be distributed, and some will return null
+
+Test Case Derivation: program returns the correct output.
+					
+How the test will be performed: Tester will assign power to exceed data centers some data centers will be useless as in table 3. It is expected to see some data centers be fully assigned and some are assigned to null.
+					
+\item{Simple multiple valid output}\\
+
+Control: Manual
+					
+Initial State: Pending Input
+					
+Input: Data centers with various that have a huge gap with each other. (1km, 5km, 50km, 500km, 2000km)
+
+Output: In this case, it is expected to see the near data centers be assigned more computational power and the far one the less.
+
+Test Case Derivation: The program returns the correct output.
+					
+How the test will be performed: Tester manually changes the inputs to see the changes in output.
+
+\end{enumerate}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+     data center & distance(km) & total power consumption(MW) \\
+		\hline
+		\name{1}  & 1 & 50 \\ \hline
+		\name{2}  & 5 & \\ \hline
+		\name{3}  & 20 & \\ \hline
+		\name{4}  & 100 & \\ \hline
+		\name{5}  & 200 & \\ \hline
+            \name{6}  & 1000 & \\ \hline
+            \name{7}  & 2000 & \\ \hline
+            \name{8}  & 5000 & \\ \hline
+	\end{tabular}
+	\caption{Sample number of input which some of data center will not be assigned power}
+	\label{Table:A_trace}
+\end{table}
+\subsection{Tests for Non-Functional Requirements}
+\label{tnfr}
+
+Non-functional requirements are given in SRS section 5.2. There are 4 non-functional requirements: Accuracy, Usability, Maintainability, and Portability. The 
+rest of this section provides detailed descriptions on how to test them.
+
+\subsubsection{Portability}\label{Aport}
+
+\paragraph{Portability Test} The program shall be able to run on different OS. Since the core algorithm is written on MATLAB, the program should fit every type of OS that can run MATLAB.\textsuperscript{\cite{rosellon2003different}}
+
+\begin{enumerate}
+
+\item{Portability on Windows 10\\}
+
+Type: Manual
+					
+Initial State: Pending Input
+					
+Input: Set of sample distances.
+					
+Output: The output will automatically write in a .csv file and able to open in the windows system. 
+					
+How the test will be performed: Fair
+
+
+\item{Portability on Linux Ubuntu}\\
+
+Type: Manual
+					
+Initial State: Pending Input
+					
+Input: Set of sample distances.
+					
+Output: The output will automatically write in a .csv file and be able to open in a Linux system. 
+					
+How the test will be performed: Fair
+
+\end{enumerate}
+
+\subsubsection{Maintainable}\label{Amaintain}
+
+\paragraph{Maintainability Test} Proper documents should be included in this project. 
+
+\begin{enumerate}
+\item{Maintainability Test}\\
+
+Type: Manual
+					
+Initial State: none
+					
+Input: none
+					
+Output: none
+					
+How the test will be performed: Tester manually checks the contents in the Github repo. On success, documents shall be uploaded following the schedule of CAS741 and no issue shall be closed without a proper response.
+
+\end{enumerate}
+
+\subsubsection{Usability}\label{Audst}
+
+\paragraph{Usability Test}  The program shall not have a user interface but will clearly show the output and data will easy to copy 
+
+\begin{enumerate}
+\item{Usability Test\\}
+
+Type: Manual
+					
+Initial State: none
+					
+Input: none
+					
+Output: none
+					
+How to test will be performed: Tester reviews the code and since it is designed to write the result in excel, the tester will easy to copy and use the result.
+
+\end{enumerate}
+
+\subsubsection{Accuracy}\label{Audst}
+
+\paragraph{Accuracy Test}   The accuracy of the computed solutions should meet the level needed for the engineering app.
+
+\begin{enumerate}
+\item{Accuracy Test}\\
+
+Type: Manual
+					
+Initial State: Pending Input
+					
+Input: A set of distances of data centers with power generation of known distributed computational power will be set up and tested the accuracy.
+					
+Output: Tester will observe if the output matches the known result.
+					
+How the test will be performed: Tester reviews the code and since we trust the library of MATLAB, the center algorithm of minimization analysis will be correct by default. The known result will allow 3\% - 5\% correctness.\textsuperscript{\cite{rivier2013electricity}}
+
+\end{enumerate}
+
+
+
+\subsection{Traceability Between Test Cases and Requirements}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+		\hline
+		& R1 & R2 & R3 & R4 & R5 & R6 & Portable & Maintainable \\
+		\hline
+		\nameref{Ainput}    &X&X& & & & & & \\ \hline
+		\nameref{Aoutput}   & & &X&X&X& & & \\ \hline
+		\nameref{Aport}     & & & & & &X& & \\ \hline
+		\nameref{Amaintain} & & & & & & &X& \\ \hline
+		\nameref{Audst}     & & & & & & & &X\\ \hline
+	\end{tabular}
+	\caption{Traceability Between Test Cases and Requirements}
+	\label{Table:A_trace}
+\end{table}
+\newpage
+\section{Unit Test Description}
+\label{unittest}
+
+\subsection{Unit Testing Scope}
+
+This section is intentionally left blank until the MIS is completed.
+
+\newpage
+
+\bibliographystyle {unsrt}
+\bibliography{References.bib}
+
+
+\end{document}
