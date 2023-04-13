@@ -1,0 +1,4 @@
+Number of data centers,Distance to data centers,Rate of renewable energy,Rate of grid energy,Total power consumption,Maximum power consumption per data center,Grid_Power_restrictions,Renewable_limits
+1,100,0.045,0.012,15,10,10,5
+2,200,,,,,10,5
+3,300,,,,,10,5
