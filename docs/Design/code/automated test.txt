@@ -1,0 +1,27 @@
+% Automated Test Script for the Power Distribution Program
+
+% Define test cases
+test_cases = {
+    ‘ex11.csv', 'ex22.csv’, ‘ex33.csv', ‘ex44.csv', ‘ex55.csv', ‘ex66.csv', ‘ex77.csv'
+};741741 test
+
+% Define the expected results for each test case
+expected_costs = [0.18297, 0.09, 0.09, 34.4359, 6.25, 10, 5]; % Replace with expected costs for each test case
+expected_satisfactions = [true, false, true, true, true, true, true]; % Replace with expected constraint satisfaction for each test case
+
+% Loop through all test cases
+for test_idx = 1:length(test_cases)
+    % Run the Power Distribution Program with the current test case
+    test_filename = test_cases{test_idx};
+    [cost, constraints_satisfied] = power_distribution_program(test_filename);
+    
+    % Check if the results match the expected results
+    cost_error = abs(cost - expected_costs(test_idx));
+    cost_tolerance = 0.1;
+    
+    if cost_error < cost_tolerance && constraints_satisfied == expected_satisfactions(test_idx)
+        disp("Test Case " + test_idx + " Passed");
+    else
+        disp("Test Case " + test_idx + " Failed");
+    end
+end

@@ -1,0 +1,149 @@
+function [power_renewable, power_grid, actual_power_grid, cost, constraints_satisfied] = optimize_power_consumption(filename)
+    % Ask the user to input a CSV file
+%clc
+%clear
+filename = input("Please enter the CSV filename: ", 's');
+%filename = 'ex1.csv';
+Grid_Power_restrictions = input("Please enter the Grid_Power_restrictions: ");
+Renewable_limits = input("Please enter the Renewable_limits: ");
+% Read the CSV file
+T = readtable(filename);
+num_data_centers = size(T,1);
+ylabel = size(T,1);
+distances = table2array(T(:,2))';
+
+rate_renewable_tmp = table2array(T(:,3));
+if isnan(rate_renewable_tmp(1,1))
+    rate_renewable = 0.041; % default value
+else
+    rate_renewable = rate_renewable_tmp(1,1);
+end
+
+rate_grid_tmp = table2array(T(:,4));
+if isnan(rate_grid_tmp(1,1))
+    rate_grid = 0.009; % default value
+else
+    rate_grid = rate_grid_tmp(1,1);
+end
+
+total_power_consumption_tmp = table2array(T(:,5));
+if isnan(total_power_consumption_tmp(1,1))
+    total_power_consumption = 10; % default value
+else
+    total_power_consumption = total_power_consumption_tmp(1,1);
+end
+
+max_power_consumption_tmp = table2array(T(:,6));
+if isnan(max_power_consumption_tmp(1,1))
+    max_power_consumption = 6; % default value
+else
+    max_power_consumption = max_power_consumption_tmp(1,1);
+end
+
+% Display the extracted information
+disp("Number of data centers: " + num_data_centers);
+disp("Distances to data centers: " + distances + "km");
+disp("Rate of renewable energy: " + rate_renewable);
+disp("Rate of grid energy: " + rate_grid);
+disp("Total power consumption: " + total_power_consumption);
+disp("Maximum power consumption per data center: " + max_power_consumption);
+
+TL = 3e-5; %power loss
+L = total_power_consumption; % Define L
+
+% Set up optimization problem
+
+f = [ones(1,num_data_centers)*rate_renewable ones(1,num_data_centers) .* (rate_grid*(1-TL*distances))];
+
+A1 = [eye(num_data_centers) diag(1-TL*distances)];
+b1 = ones(num_data_centers,1) * max_power_consumption;
+
+A2 = [zeros(num_data_centers) eye(num_data_centers); eye(num_data_centers) zeros(num_data_centers)];
+b2 = [ones(num_data_centers,1) * Renewable_limits; ones(num_data_centers,1) * Grid_Power_restrictions];
+
+A = [A1; A2];
+b = [b1; b2];
+
+lb = zeros(num_data_centers*2,1); % lower bounds
+%ub = [ones(num_data_centers,1) * Grid_Power_restrictions; ones(num_data_centers,1) * Renewable_limits]; % upper bounds
+ub = [ones(num_data_centers,1) * Renewable_limits; ones(num_data_centers,1) * Grid_Power_restrictions]; % upper bounds
+
+x0 = zeros(num_data_centers*2,1); % initial guess
+
+%equality constraint, sigma ri + sigma pi = L, Aeqx = beq
+Aeq = [ones(1,num_data_centers) (1-TL*distances)];
+beq = L;
+
+% Solve linear program
+options = optimoptions('linprog','Display','none'); % suppress output
+[x,~,exitflag] = linprog(f,A,b,Aeq,beq,lb,ub,options);
+
+% Check the solution exit flag
+if exitflag ~= 1
+    disp("Error: linprog did not return a valid solution.")
+    return
+end
+
+% Calculate optimal solution
+power_renewable = x(1:num_data_centers)';
+power_grid = x(num_data_centers+1:end)';
+actual_power_grid = power_grid .* (1-TL*distances);
+cost = sum(rate_renewable*power_renewable + rate_grid*actual_power_grid);
+
+% Print results
+disp("Optimal power consumption for each data center:");
+for idx = 1:num_data_centers
+    disp("Data Center " + idx + ":");
+    disp("Renewable energy: " + power_renewable(idx));
+    disp("Grid energy: " + power_grid(idx));
+    disp("Actual Grid energy: " + actual_power_grid(idx));
+end
+disp("Total cost: " + cost);
+
+plot(distances,power_renewable + actual_power_grid,'o-')
+Min = min(power_renewable + actual_power_grid);
+Max = max(power_renewable + actual_power_grid);
+ylim([Min - 0.02,Max + 0.02]);%Line 110 ylim([Min - 0.02,Max + 0.02]);%constrain for x 
+% Check if constraints are satisfied
+constraints_satisfied = true;
+tolerance = 0.3;
+
+for idx = 1:num_data_centers
+    if (power_grid(idx) > Grid_Power_restrictions + tolerance) || (power_renewable(idx) > Renewable_limits + tolerance) || (power_grid(idx) + power_renewable(idx) > max_power_consumption + tolerance)
+        constraints_satisfied = false;
+        break;
+    end
+end
+
+if constraints_satisfied
+    disp("All constraints are satisfied.");
+else
+    disp("Constraints are not satisfied.");
+end
+
+end
+
+function [constraints_satisfied] = check_constraints(power_renewable, power_grid, Renewable_limits, Grid_Power_restrictions, max_power_consumption)
+    function testCheckConstraints(testCase)
+            % Test case 1: Constraints are satisfied.
+            power_renewable = [3, 2];
+            power_grid = [1, 1];
+            Renewable_limits = [4, 3];
+            Grid_Power_restrictions = [2, 2];
+            max_power_consumption = 5;
+            
+            constraints_satisfied = check_constraints(power_renewable, power_grid, Renewable_limits, Grid_Power_restrictions, max_power_consumption);
+            testCase.verifyTrue(constraints_satisfied);
+            
+            % Test case 2: Constraints are not satisfied.
+            power_renewable = [4, 4];
+            power_grid = [2, 2];
+            Renewable_limits = [4, 3];
+            Grid_Power_restrictions = [2, 2];
+            max_power_consumption = 5;
+            
+            constraints_satisfied = check_constraints(power_renewable, power_grid, Renewable_limits, Grid_Power_restrictions, max_power_consumption);
+            testCase.verifyFalse(constraints_satisfied);
+        end
+end
+

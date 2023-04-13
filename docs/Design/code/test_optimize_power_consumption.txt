@@ -1,0 +1,46 @@
+classdef test_optimize_power_consumption < matlab.unittest.TestCase
+    methods (Test)
+        function testOptimization(testCase)
+            % Test case 1: A simple CSV file with valid data.
+            filename = 'test_valid.csv';
+            [power_renewable, power_grid, actual_power_grid, cost, constraints_satisfied] = optimize_power_consumption(filename);
+            
+            % Check if the constraints are satisfied.
+            testCase.verifyTrue(constraints_satisfied);
+            
+            % Check if the power consumption values are reasonable (e.g., non-negative).
+            testCase.verifyGreaterThanOrEqual(power_renewable, 0);
+            testCase.verifyGreaterThanOrEqual(power_grid, 0);
+            
+            % Test case 2: A CSV file with invalid data (e.g., NaN values).
+            filename = 'test_invalid.csv';
+            [power_renewable, power_grid, actual_power_grid, cost, constraints_satisfied] = optimize_power_consumption(filename);
+            
+            % Check if the program handles invalid data correctly.
+            testCase.verifyFalse(constraints_satisfied);
+        end
+        
+        function testCheckConstraints(testCase)
+            % Test case 1: Constraints are satisfied.
+            power_renewable = [3, 2];
+            power_grid = [1, 1];
+            Renewable_limits = [4, 3];
+            Grid_Power_restrictions = [2, 2];
+            max_power_consumption = 5;
+            
+            constraints_satisfied = check_constraints(power_renewable, power_grid, Renewable_limits, Grid_Power_restrictions, max_power_consumption);
+            testCase.verifyTrue(constraints_satisfied);
+            
+            % Test case 2: Constraints are not satisfied.
+            power_renewable = [4, 4];
+            power_grid = [2, 2];
+            Renewable_limits = [4, 3];
+            Grid_Power_restrictions = [2, 2];
+            max_power_consumption = 5;
+            
+            constraints_satisfied = check_constraints(power_renewable, power_grid, Renewable_limits, Grid_Power_restrictions, max_power_consumption);
+            testCase.verifyFalse(constraints_satisfied);
+        end
+    end
+end
+
