@@ -63,8 +63,19 @@ urlcolor=cyan          % color of external links
 
 \tableofcontents
 
-\newpage
 
+\newpage
+\section{Revision History}
+
+\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
+\toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
+\midrule
+March 12, 2023 & 1.0 & First Draft\\
+May 2, 2023 & 1.1 & Revision 1\\
+\bottomrule
+\end{tabularx}
+
+\newpage
 \section{Symbols, Abbreviations and Acronyms}
 
     See SRS Documentation at \url{https://github.com/KarenKarenWang/cas741_project1/tree/main/docs/SRS}
@@ -82,12 +93,6 @@ Complementary documents include the System Requirement Specifications
 and Module Guide.  The full documentation and implementation can be
 found at \url{https://github.com/KarenKarenWang/cas741_project1/tree/main/docs/SRS}.
 
-The specification is given in terms of functions, rather than sequences.  For
-instance, the power loss along transmission is given as a function of distances
-($\mathbb{R} \rightarrow \mathbb{R})$, not as a sequence ($\mathbb{R}^n$).  This
-approach is more straightforward for the specification, but in the
-implementation stage, it will likely be necessary to introduce a
-sequence, assuming that a numerical solver is used for the system of linear programming.
 
 \section{Notation}
 
@@ -98,7 +103,7 @@ with the addition that template modules have been adapted from
 multiple assignment statement and conditional rules follow the form $(c_1
 \Rightarrow r_1 | c_2 \Rightarrow r_2 | ... | c_n \Rightarrow r_n )$.
 
-The following table summarizes the primitive data types used by \progname. 
+Table 1 summarizes the primitive data types used by \progname. 
 
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
@@ -168,9 +173,8 @@ main
 
 \subsection{Uses}
 
-Parameter (Section~\ref{Parameters}), Temperature
-(Section~\ref{Temperature}), Optimization
-(Section~\ref{ODE}), Energy (Section~\ref{Energy}), verify\_output (Section~\ref{VerifyOutput}), plot
+Parameter (Section~\ref{Parameters}), Optimization
+(Section~\ref{Temperature}), verify\_output (Section~\ref{VerifyOutput}), plot
 (Section~\ref{Plot}), output (Section~\ref{Output})
 
 \subsection{Syntax}
@@ -197,21 +201,20 @@ None
 
 \noindent main():
 \begin{itemize}
-\item transition: Modify the state of Param module and the environment variables
-  for the Plot and Output modules by following these steps\\
+\item transition: Modify the state of grid power consumption and the renewable power consumption for the Plot and Output modules by following these steps\\
 \end{itemize}
 
 \noindent Get (filenameIn: string) and (filenameOut: string) from user\\
 
 \noindent load\_params(filenameIn)\\
 
-\noindent \#\textit{Find minimization cost function} ($C_T$,
-  $C_R$, $C_G$, $C_g$, $C_r$, $L_T$, $R_T$, $P_T$), \textit{and transmission loss} ($T_L$) \textit{and distances of data centers with power station} ($d_i$)\\
+\noindent \#\textit{Find minimization cost function} ($C_\text{total}$,
+  $C_R$, $C_G$, $C_g$, $C_r$, $L_\text{total}$, $R_\text{total}$, $P_\text{total}$), \textit{and transmission loss} ($T_L$) \textit{and distances of data centers with power station} ($d_i$)\\
 
-\noindent $A_{eq} \cdot x = b_{eq}$ := \text{solve}(\text{linp\_optimization}, $L_T$,
-$P_T$, $R_T$, $C_T$, $C_R$, $C_G$,)\\
+\noindent $A_{eq} \cdot x = b_{eq}$ := \text{solve}(\text{linp\_optimization}, $L_\text{total}$,
+$P_\text{total}$, $R_\text{total}$, $C_\text{total}$, $C_R$, $C_G$,)\\
 
-\noindent $L_T$ := solve(linp\_optimization,
+\noindent $L_\text{total}$ := solve(linp\_optimization,
 $R_i^N$, $P_i^N$)\\
 
 
@@ -226,17 +229,17 @@ $R_i^N$, $P_i^N$)\\
 \noindent \#\textit{Output calculated values to a file and to a plot.  Verify
  the sum of calculated values as less than total power consumption.}\\
 
-\noindent verify\_output($L_T$, $R_T$, $P_T$)\\
+\noindent verify\_output($L_\text{total}$, $R_\text{total}$, $P_\text{total}$)\\
 
 \noindent plot($L_i$, $d_i$)\\
 
-\noindent output(filenameOut, $L_i$, $d_i$, $R_i$, $P_i$, $C_T$)\\
+\noindent output(filenameOut, $L_i$, $d_i$, $R_i$, $P_i$, $C_\text{total}$)\\
 
 \newpage
 
 \section{MIS of Input Parameters Module} \label{Parameters}
 
-The secrets of this module are the data structure for input parameters, how the
+The secrets of this module are the input datas, how the
 values are input and how the values are verified.  The load and verify secrets
 are isolated to their own access programs.
 
@@ -255,13 +258,13 @@ SpecParam (Section~\ref{SpecParam})
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \midrule
 load\_params & string & - &  FileTypeError \\
-verify\_params & - & - & badLength, badDiam, outofboundary, negativevalue,
+verify\_params & - & - & badLength, valueError, outofboundary, negativevalue,
                         badTotalPower, badRenewableRate, badGridPowerRate,
                         badDistances\\
 $d_i$ & - & $\mathbb{R}$\\
 $C_R$ & - & $\mathbb{R}$\\
 $C_P$ & - & $\mathbb{R}$\\
-$L_T$ & - & $\mathbb{R}$\\
+$L_\text{total}$ & - & $\mathbb{R}$\\
 ... & ... & ...\\
 $L_i$ & - & $\mathbb{R}$ \\
 \bottomrule
@@ -278,26 +281,26 @@ inputFile: sequence of string \#\textit{f[i] is the ith string in the text file 
 \renewcommand{\arraystretch}{1.2}
 \begin{longtable*}[l]{l} 
 \# From T1\\
-$R_i$: $\mathbb{R}$ \\
-$P_i$: $\mathbb{R}$ \\
-$C_T$: $\mathbb{R}$ \\
-$C_r$: $\mathbb{R}$ \\
-$C_p$ : $\mathbb{R}$ \\
+$R_i$: $\mathbb{R}$  (renewable energy consumption for each data center)\\
+$P_i$: $\mathbb{R}$ (grid energy consumption for each data center)\\
+$C_\text{total}$: $\mathbb{R}$ (total cost)\\
+$C_r$: $\mathbb{R}$ (cost for renewable consumption)\\
+$C_p$ : $\mathbb{R}$ (cost for grid consumption)
 ~\\
 \# From T2\\
-$T_L$: $\mathbb{R}$ \\
-$P_i$: $\mathbb{R}$ \\
-$d_i$: $\mathbb{R}$ \\
+$T_L$: $\mathbb{R}$ (total power loss)\\
+$P_i$: $\mathbb{R}$ (grid energy consumption for each data center)\\
+$d_i$: $\mathbb{R}$ (distances between power station and each data center)
 ~\\
 \noindent \# From T3\\
-$L_T$: $\mathbb{R}$ \\
-$L_i$: $\mathbb{R}$ \\
-$R_i$: $\mathbb{R}$ \\
-$P_i$: $\mathbb{R}$ \\
+$L_\text{total}$: $\mathbb{R}$ (total load)\\ 
+$L_i$: $\mathbb{R}$ (load for each data center)\\
+$R_i$: $\mathbb{R}$ (renewable energy consumption for each data center)\\
+$P_i$: $\mathbb{R}$ (grid energy consumption for each data center\\
 ~\\
 \# To Support IM1\\
-$L_T$: $\mathbb{R}$ \\
-$L_i$: $\mathbb{R}$ \\ 
+$L_\text{total}$: $\mathbb{R}$ (total load\\
+$L_i$: $\mathbb{R}$ (load for each data center)\\ 
 ~\\
 
 \end{longtable*}
@@ -343,7 +346,7 @@ with a '\#' symbol.
 \item output: \textit{out} := $L_i$
 \item exception: none
 \end{itemize}
-\noindent Param.$C_T$:
+\noindent Param.$C_\text{total}$:
 \begin{itemize}
 \item output: \textit{out} := $C_T$
 \item exception: none
@@ -360,9 +363,9 @@ with a '\#' symbol.
 \item output: \textit{out} := $C_p$
 \item exception: none
 \end{itemize}
-\noindent Param.$L_T$:
+\noindent Param.$L_\text{total}$:
 \begin{itemize}
-\item output: \textit{out} := $L_T$
+\item output: \textit{out} := $L_\text{total}$
 \item exception: none
 \end{itemize}
 \noindent Param.$L_max$:
@@ -378,7 +381,7 @@ with a '\#' symbol.
 
 
 \noindent \begin{longtable*}[l]{l l} 
-$\neg (C_r < 0)$ & $\Rightarrow$ badValue\\
+
 $\neg (d_i > 2000)$ & $\Rightarrow$ warnLength\\
 $\neg (C_p < 0)$ & $\Rightarrow$ badValue\\
 $\neg (0 \leq L_T \leq L_\text{max})$ & $\Rightarrow$ warnLength\\
@@ -418,7 +421,7 @@ not changed for the life of the program.
  \hline
  \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
  \hline
- verify\_valid & - & - & badLength, badDiam, outofboundary, negativevalue,
+ verify\_valid & - & - & badLength, valueError, outofboundary, negativevalue,
                         badTotalPower, badRenewableRate, badGridPowerRate,
                         badDistances\\
  \hline
@@ -430,7 +433,7 @@ not changed for the life of the program.
  \subsection{Semantics}
 
 \subsubsection{Environment Variables}
-Distances upper boundary
+Not applicable
 
  \subsubsection{Assumptions}
 
@@ -441,13 +444,12 @@ All of the fields Param have been assigned values before any of the access
 
  verify\_valid(): 
  \begin{itemize}
- \item transition: none
+ \item transition: Reading user inputs: Reading the CSV file and extracting values: Setting up the optimization problem: Solving the optimization problem: Calculating and displaying results:
  \item exceptions: exc := (\\
  Param.get$d_i$() $\leq 0 \Rightarrow$ badLength $|$\\
  Params.get$C_r$() $\leq 0 \Rightarrow$ badValue $|$\\
  Params.get$L_T$() $\leq$ $L_\text{max}$ $\Rightarrow$ badValue$|$\\
  Params.get$C_p$() $\leq 0 \Rightarrow$ badValue $|$\\
- Params.get$L_\text{max}$() $\leq 0 \Rightarrow$ badValue $|$\\ 
  \end{itemize}
 
  
@@ -476,11 +478,11 @@ Param (Section~\ref{Parameters})
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-linprog & -- & $(\mathbb{R} \rightarrow \mathbb{R})$ & - \\
+linprog & -- & $(\mathbb{R} \rightarrow \mathbb{R})$ & distribution of consumptions \\
 \hline
-optimoptions& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & - \\
+optimoptions& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & minimization cost \\
 \hline
-transloss& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & - \\
+transloss& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & real number \\
 \hline
 \end{tabular}
 \end{center}
@@ -488,8 +490,14 @@ transloss& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & - \\
 \subsection{Semantics}
 
 \subsubsection{State Variables}
+\begin{itemize}
+    \item Renewable energy power consumption 
+    \item Grid energy power consumption 
+    \item Actual grid energy power consumption after considering transmission loss
+    \item Total cost of energy
+    \item Optimal power consumption for each data center
+\end{itemize}
 
-none
 
 \subsubsection{Assumptions}
 
@@ -501,8 +509,8 @@ linprog():
 \renewcommand*{\arraystretch}{1.5}
 \begin{itemize}
 \item output:
-$A_{eq} \cdot x = b_{eq}$ := \text{solve}(\text{linp\_optimization}, $L_T$,
-$P_T$, $R_T$, $C_T$, $C_R$, $C_G$,)\\
+$A_{eq} \cdot x = b_{eq}$ := \text{solve}( $L_\text{total}$,
+$P_\text{total}$, $R_\text{total}$, $C_\text{total}$, $C_R$, $C_G$,)\\
 \item exception: none
 
 \end{itemize}
@@ -510,16 +518,10 @@ $P_T$, $R_T$, $C_T$, $C_R$, $C_G$,)\\
 optimoptions(): 
 \renewcommand*{\arraystretch}{1.5}
 \begin{itemize}
-\item output: $L_T$ := solve(linp\_optimization,
+\item output: $L_\text{total}$ := solve(linp\_optimization,
 $R_i^N$, $P_i^N$)\\
 \item exception: none
-\end{itemize}
-transloss(): 
-\renewcommand*{\arraystretch}{1.5}
-\begin{itemize}
-\item output:
-$T_L = (d_i \cdot 0.03 \cdot P_i)^{N}$\\
-\item exception: none
+
 \end{itemize}
 \newpage
 
@@ -555,9 +557,9 @@ value.
 
 \subsubsection{Access Routine Semantics}
 
-\noindent verify\_output($L_i$, $d_i$, $R_i$, $P_i$, $C_T$, $L_T$, $L_\text{max}$):
+\noindent verify\_output($L_i$(scalar), $d_i$(row vector), $R_i$(row vector), $P_i$(row vector), $C_\text{total}$(scalar), $L_\text{total}$(scalar), $L_\text{max}$(scalar)):
 \begin{itemize}
-\item verification := ($L_T$ =$\sum_{i=1}^{n} $L_i$)$
+\item verification := ($L_\text{total}$ =$\sum_{i=1}^{n} $L_i$)$
 \end{itemize}
 
 
@@ -604,7 +606,7 @@ None
 
 \subsubsection{Access Routine Semantics}
 
-\noindent plot($d_i$, $L_i$):
+\noindent plot($d_i$(distances between power station and data centers), $L_i$(load distributed for each data centers):
 \begin{itemize}
 \item transition: To display a plot where the vertical axis
   The power consumption distribution and the horizontal axis is the distance between data centers and power stations.  
@@ -688,16 +690,11 @@ N/A
 \renewcommand{\arraystretch}{1.2}
 \begin{longtable*}[l]{l} 
 \# Some Default Value\\
-  $L_\text{max}$ := 6\\
-  $L_T$ := 10\\
-  $C_r$ := 0.041 \\
-  $C_p$ := 0.009 \\
-  $N$ := 5\\
-  $d_1$ := 10 \\
-  $d_2$ := 20\\
-  $d_3$ := 30\\
-  $d_4$ := 40 \\
-  $d_5$ := 50\\
+  $L_\text{max}$ := 6 (max load for each data center is 6MW)\\
+  $L_\text{total}$ := 50 (total load for all of data centers)\\
+  $C_r$ := 0.041 (price for renewable resources)\\
+  $C_p$ := 0.009 (price for grid power)\\
+  $N$ := 5( 5 of data centers )\\
   
 \end{longtable*}
 

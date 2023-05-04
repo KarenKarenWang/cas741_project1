@@ -31,16 +31,27 @@ urlcolor=cyan          % color of external links
 
 \usepackage{array}
 
-\externaldocument{../../SRS/SRS}
+%% Comments
+\newif\ifcomments\commentstrue
 
-\input{../../Comments}
-\input{../../Common}
+\ifcomments
+\newcommand{\authornote}[3]{\textcolor{#1}{[#3 ---#2]}}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\else
+\newcommand{\authornote}[3]{}
+\newcommand{\todo}[1]{}
+\fi
+
+\newcommand{\wss}[1]{\authornote{blue}{SS}{#1}}
+\newcommand{\bmac}[1]{\authornote{red}{BM}{#1}}
+
+\newcommand{\progname}{SWHS}
 
 \begin{document}
 
-\title{Module Interface Specification for \progname{}}
+\title{Module Interface Specification for Data Center Minimization Cost Analysis}
 
-\author{\authname}
+\author{Ning Wang}
 
 \date{\today}
 
@@ -48,45 +59,37 @@ urlcolor=cyan          % color of external links
 
 \pagenumbering{roman}
 
-\section{Revision History}
-
-\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
-\toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
-\midrule
-Date 1 & 1.0 & Notes\\
-Date 2 & 1.1 & Notes\\
-\bottomrule
-\end{tabularx}
-
-~\newpage
-
-\section{Symbols, Abbreviations and Acronyms}
-
-See SRS Documentation at \wss{give url}
-
-\wss{Also add any additional symbols, abbreviations or acronyms}
-
 \newpage
 
 \tableofcontents
 
 \newpage
 
+\section{Symbols, Abbreviations and Acronyms}
+
+    See SRS Documentation at \url{https://github.com/KarenKarenWang/cas741_project1/tree/main/docs/SRS}
+
 \pagenumbering{arabic}
 
 \section{Introduction}
 
-The following document details the Module Interface Specifications for
-\wss{Fill in your project name and description}
+The following document details the Module Interface Specifications for the
+implemented modules in a program simulating a Minimization with
+Phase Change Material.  It is intended to ease navigation through the program
+for design and maintenance purposes.
 
 Complementary documents include the System Requirement Specifications
 and Module Guide.  The full documentation and implementation can be
-found at \url{...}.  \wss{provide the url for your repo}
+found at \url{https://github.com/KarenKarenWang/cas741_project1/tree/main/docs/SRS}.
+
+The specification is given in terms of functions, rather than sequences.  For
+instance, the power loss along transmission is given as a function of distances
+($\mathbb{R} \rightarrow \mathbb{R})$, not as a sequence ($\mathbb{R}^n$).  This
+approach is more straightforward for the specification, but in the
+implementation stage, it will likely be necessary to introduce a
+sequence, assuming that a numerical solver is used for the system of linear programming.
 
 \section{Notation}
-
-\wss{You should describe your notation.  You can use what is below as
-  a starting point.}
 
 The structure of the MIS for modules comes from \citet{HoffmanAndStrooper1995},
 with the addition that template modules have been adapted from
@@ -131,21 +134,22 @@ The following table is taken directly from the Module Guide document for this pr
 \textbf{Level 1} & \textbf{Level 2}\\
 \midrule
 
-{Hardware-Hiding} & ~ \\
+{Hardware-Hiding Module} & ~ \\
 \midrule
 
-\multirow{7}{0.3\textwidth}{Behaviour-Hiding} & Input Parameters\\
-& Output Format\\
-& Output Verification\\
-& Temperature ODEs\\
-& Energy Equations\\ 
+\multirow{7}{0.3\textwidth}{Behaviour-Hiding Module} 
+& Input Parameters Module\\
+&Input Verification Module\\
+& Output Format Module\\
+& Output Verification Module\\
 & Control Module\\
 & Specification Parameters Module\\
 \midrule
 
-\multirow{3}{0.3\textwidth}{Software Decision} & {Sequence Data Structure}\\
-& ODE Solver\\
-& Plotting\\
+\multirow{3}{0.3\textwidth}{Software Decision Module} 
+& Optimization Module\\
+&Sequence Data Structure Module\\
+&Plotting Module\\
 \bottomrule
 
 \end{tabular}
@@ -153,26 +157,23 @@ The following table is taken directly from the Module Guide document for this pr
 \label{TblMH}
 \end{table}
 
-\newpage
-~\newpage
 
-\section{MIS of \wss{Module Name}} \label{Module} \wss{Use labels for
-  cross-referencing}
 
-\wss{You can reference SRS labels, such as R\ref{R_Inputs}.}
 
-\wss{It is also possible to use \LaTeX for hypperlinks to external documents.}
+\section{MIS of Control Module} \label{Main}
 
 \subsection{Module}
 
-\wss{Short name for the module}
+main
 
 \subsection{Uses}
 
+Parameter (Section~\ref{Parameters}), Temperature
+(Section~\ref{Temperature}), Optimization
+(Section~\ref{ODE}), Energy (Section~\ref{Energy}), verify\_output (Section~\ref{VerifyOutput}), plot
+(Section~\ref{Plot}), output (Section~\ref{Output})
 
 \subsection{Syntax}
-
-\subsubsection{Exported Constants}
 
 \subsubsection{Exported Access Programs}
 
@@ -181,7 +182,7 @@ The following table is taken directly from the Module Guide document for this pr
 \hline
 \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
 \hline
-\wss{accessProg} & - & - & - \\
+main & - & - & - \\
 \hline
 \end{tabular}
 \end{center}
@@ -190,52 +191,544 @@ The following table is taken directly from the Module Guide document for this pr
 
 \subsubsection{State Variables}
 
-\wss{Not all modules will have state variables.  State variables give the module
-  a memory.}
-
-\subsubsection{Environment Variables}
-
-\wss{This section is not necessary for all modules.  Its purpose is to capture
-  when the module has external interaction with the environment, such as for a
-  device driver, screen interface, keyboard, file, etc.}
-
-\subsubsection{Assumptions}
-
-\wss{Try to minimize assumptions and anticipate programmer errors via
-  exceptions, but for practical purposes assumptions are sometimes appropriate.}
+None
 
 \subsubsection{Access Routine Semantics}
 
-\noindent \wss{accessProg}():
+\noindent main():
 \begin{itemize}
-\item transition: \wss{if appropriate} 
-\item output: \wss{if appropriate} 
-\item exception: \wss{if appropriate} 
+\item transition: Modify the state of Param module and the environment variables
+  for the Plot and Output modules by following these steps\\
 \end{itemize}
 
-\wss{A module without environment variables or state variables is unlikely to
-  have a state transition.  In this case a state transition can only occur if
-  the module is changing the state of another module.}
+\noindent Get (filenameIn: string) and (filenameOut: string) from user\\
 
-\wss{Modules rarely have both a transition and an output.  In most cases you
-  will have one or the other.}
+\noindent load\_params(filenameIn)\\
 
-\subsubsection{Local Functions}
+\noindent \#\textit{Find minimization cost function} ($C_T$,
+  $C_R$, $C_G$, $C_g$, $C_r$, $L_T$, $R_T$, $P_T$), \textit{and transmission loss} ($T_L$) \textit{and distances of data centers with power station} ($d_i$)\\
 
-\wss{As appropriate} \wss{These functions are for the purpose of specification.
-  They are not necessarily something that is going to be implemented
-  explicitly.  Even if they are implemented, they are not exported; they only
-  have local scope.}
+\noindent $A_{eq} \cdot x = b_{eq}$ := \text{solve}(\text{linp\_optimization}, $L_T$,
+$P_T$, $R_T$, $C_T$, $C_R$, $C_G$,)\\
+
+\noindent $L_T$ := solve(linp\_optimization,
+$R_i^N$, $P_i^N$)\\
+
+
+\noindent \#\textit{find transmission loss along distances}\\
+\\
+\indent $T_L = (d_i \cdot 0.03 \cdot P_i)^{N}$\\
+
+\noindent \#\textit{Power distribution}\\
+\\
+\indent $L_i$ = $R_i$ + $P_i$ \\
+
+\noindent \#\textit{Output calculated values to a file and to a plot.  Verify
+ the sum of calculated values as less than total power consumption.}\\
+
+\noindent verify\_output($L_T$, $R_T$, $P_T$)\\
+
+\noindent plot($L_i$, $d_i$)\\
+
+\noindent output(filenameOut, $L_i$, $d_i$, $R_i$, $P_i$, $C_T$)\\
+
+\newpage
+
+\section{MIS of Input Parameters Module} \label{Parameters}
+
+The secrets of this module are the data structure for input parameters, how the
+values are input and how the values are verified.  The load and verify secrets
+are isolated to their own access programs.
+
+\subsection{Module}
+
+Param
+
+\subsection{Uses}
+
+SpecParam (Section~\ref{SpecParam})
+
+\subsection{Syntax}
+
+\begin{tabular}{p{3cm} p{1cm} p{1cm} >{\raggedright\arraybackslash}p{9cm}}
+\toprule
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\midrule
+load\_params & string & - &  FileTypeError \\
+verify\_params & - & - & badLength, badDiam, outofboundary, negativevalue,
+                        badTotalPower, badRenewableRate, badGridPowerRate,
+                        badDistances\\
+$d_i$ & - & $\mathbb{R}$\\
+$C_R$ & - & $\mathbb{R}$\\
+$C_P$ & - & $\mathbb{R}$\\
+$L_T$ & - & $\mathbb{R}$\\
+... & ... & ...\\
+$L_i$ & - & $\mathbb{R}$ \\
+\bottomrule
+\end{tabular}
+
+\subsection{Semantics}
+
+\subsubsection{Environment Variables}
+
+inputFile: sequence of string \#\textit{f[i] is the ith string in the text file f}\\ 
+
+\subsubsection{State Variables}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable*}[l]{l} 
+\# From T1\\
+$R_i$: $\mathbb{R}$ \\
+$P_i$: $\mathbb{R}$ \\
+$C_T$: $\mathbb{R}$ \\
+$C_r$: $\mathbb{R}$ \\
+$C_p$ : $\mathbb{R}$ \\
+~\\
+\# From T2\\
+$T_L$: $\mathbb{R}$ \\
+$P_i$: $\mathbb{R}$ \\
+$d_i$: $\mathbb{R}$ \\
+~\\
+\noindent \# From T3\\
+$L_T$: $\mathbb{R}$ \\
+$L_i$: $\mathbb{R}$ \\
+$R_i$: $\mathbb{R}$ \\
+$P_i$: $\mathbb{R}$ \\
+~\\
+\# To Support IM1\\
+$L_T$: $\mathbb{R}$ \\
+$L_i$: $\mathbb{R}$ \\ 
+~\\
+
+\end{longtable*}
+
+\subsubsection{Assumptions}
+
+\begin{itemize}
+
+\item readtable(filename) will be called before the values of any state variables will be accessed.
+
+\item The file contains the string equivalents of the numeric values for
+each input parameter in order, each on a new line. The order is the same as in
+the table in R1 of the SRS. Any comments in the input file should be denoted
+with a '\#' symbol.
+
+\end{itemize}
+
+\subsubsection{Access Routine Semantics}
+
+\noindent Param.$R_i$:
+\begin{itemize}
+\item output: \textit{out} := $R_i$
+\item exception: none
+\end{itemize}
+
+\noindent Param.$P_i$:
+\begin{itemize}
+\item output: \textit{out} := $P_i$
+\item exception: none
+\end{itemize}
+
+...
+~\newline
+
+\noindent Param.$T_L$:
+\begin{itemize}
+\item output: \textit{out} := $T_L$
+\item exception: none
+\end{itemize}
+
+\noindent Param.$L_i$:
+\begin{itemize}
+\item output: \textit{out} := $L_i$
+\item exception: none
+\end{itemize}
+\noindent Param.$C_T$:
+\begin{itemize}
+\item output: \textit{out} := $C_T$
+\item exception: none
+\end{itemize}
+\noindent load\_params($s$):
+
+\noindent Param.$C_r$:
+\begin{itemize}
+\item output: \textit{out} := $C_r$
+\item exception: none
+\end{itemize}
+\noindent Param.$C_p$:
+\begin{itemize}
+\item output: \textit{out} := $C_p$
+\item exception: none
+\end{itemize}
+\noindent Param.$L_T$:
+\begin{itemize}
+\item output: \textit{out} := $L_T$
+\item exception: none
+\end{itemize}
+\noindent Param.$L_max$:
+\begin{itemize}
+\item output: \textit{out} := $L_\text{max}$
+\item exception: none
+\end{itemize}
+\noindent Param.$d_i$:
+\begin{itemize}
+\item output: \textit{out} := $d_i$
+\item exception: none
+\end{itemize}
+
+
+\noindent \begin{longtable*}[l]{l l} 
+$\neg (C_r < 0)$ & $\Rightarrow$ badValue\\
+$\neg (d_i > 2000)$ & $\Rightarrow$ warnLength\\
+$\neg (C_p < 0)$ & $\Rightarrow$ badValue\\
+$\neg (0 \leq L_T \leq L_\text{max})$ & $\Rightarrow$ warnLength\\
+$\neg (d_i < 0)$ & $\Rightarrow$ badValue\\
+$\neg (L_T < 0)$ & $\Rightarrow$ badValue\\
+$\neg (L_\text{max} < 0)$ & $\Rightarrow$ badValue\\
+\end{longtable*}
+
+etc.  See Appendix (Section~\ref{Appendix}) for the complete list of exceptions and
+associated error messages.
+
+\subsection{Considerations}
+
+The value of each state variable can be accessed through its name (getter).  An
+access program is available for each state variable.  There are no setters for
+the state variables, since the values will be set and checked by load params and
+not changed for the life of the program.
+
+\newpage
+
+ \section{MIS of Input Verification Module} \label{VerifyInput}
+
+ \subsection{Module}
+
+ verify\_params
+
+ \subsection{Uses}
+
+ Param (Section~\ref{Parameters})
+
+ \subsection{Syntax}
+
+ \subsubsection{Exported Access Programs}
+
+ \begin{center}
+ \begin{tabular}{p{3cm} p{1cm} p{1cm} p{9cm}}
+ \hline
+ \textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+ \hline
+ verify\_valid & - & - & badLength, badDiam, outofboundary, negativevalue,
+                        badTotalPower, badRenewableRate, badGridPowerRate,
+                        badDistances\\
+ \hline
+ verify\_recommend & - & - & - \\
+ \hline
+ \end{tabular}
+ \end{center}
+
+ \subsection{Semantics}
+
+\subsubsection{Environment Variables}
+Distances upper boundary
+
+ \subsubsection{Assumptions}
+
+All of the fields Param have been assigned values before any of the access
+ routines for this module are called.
+
+ \subsubsection{Access Routine Semantics}
+
+ verify\_valid(): 
+ \begin{itemize}
+ \item transition: none
+ \item exceptions: exc := (\\
+ Param.get$d_i$() $\leq 0 \Rightarrow$ badLength $|$\\
+ Params.get$C_r$() $\leq 0 \Rightarrow$ badValue $|$\\
+ Params.get$L_T$() $\leq$ $L_\text{max}$ $\Rightarrow$ badValue$|$\\
+ Params.get$C_p$() $\leq 0 \Rightarrow$ badValue $|$\\
+ Params.get$L_\text{max}$() $\leq 0 \Rightarrow$ badValue $|$\\ 
+ \end{itemize}
+
+ 
+ \subsection{Considerations}
+
+See Appendix (Section~\ref{Appendix}) for the complete list of exceptions and
+ associated error messages.
+
+\newpage
+\section{MIS of Optimization Module} \label{Temperature}
+
+\subsection{Module}
+
+Minimize total cost
+
+\subsection{Uses}
+
+Param (Section~\ref{Parameters})
+
+\subsection{Syntax}
+
+\subsubsection{Exported Access Programs}
+
+\begin{center}
+\begin{tabular}{p{3.5cm} p{1cm} p{7cm} p{2cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+linprog & -- & $(\mathbb{R} \rightarrow \mathbb{R})$ & - \\
+\hline
+optimoptions& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & - \\
+\hline
+transloss& -- &  $(\mathbb{R}\rightarrow \mathbb{R})$ & - \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+none
+
+\subsubsection{Assumptions}
+
+none
+
+\subsubsection{Access Routine Semantics}
+
+linprog(): 
+\renewcommand*{\arraystretch}{1.5}
+\begin{itemize}
+\item output:
+$A_{eq} \cdot x = b_{eq}$ := \text{solve}(\text{linp\_optimization}, $L_T$,
+$P_T$, $R_T$, $C_T$, $C_R$, $C_G$,)\\
+\item exception: none
+
+\end{itemize}
+
+optimoptions(): 
+\renewcommand*{\arraystretch}{1.5}
+\begin{itemize}
+\item output: $L_T$ := solve(linp\_optimization,
+$R_i^N$, $P_i^N$)\\
+\item exception: none
+\end{itemize}
+transloss(): 
+\renewcommand*{\arraystretch}{1.5}
+\begin{itemize}
+\item output:
+$T_L = (d_i \cdot 0.03 \cdot P_i)^{N}$\\
+\item exception: none
+\end{itemize}
+\newpage
+
+
+\section{MIS of Output Verification Module} \label{VerifyOutput}
+
+\subsection{Module}
+
+verify\_output
+
+\subsection{Uses}
+
+Param (Section~\ref{Parameters})
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constant}
+
+None
+
+
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+None
+
+\subsubsection{Assumptions}
+
+All of the fields of the input parameters structure have been assigned a
+value.  
+
+\subsubsection{Access Routine Semantics}
+
+\noindent verify\_output($L_i$, $d_i$, $R_i$, $P_i$, $C_T$, $L_T$, $L_\text{max}$):
+\begin{itemize}
+\item verification := ($L_T$ =$\sum_{i=1}^{n} $L_i$)$
+\end{itemize}
+
+
+\newpage
+\section{MIS of Plotting Module} \label{Plot}
+
+\subsection{Module}
+
+plot
+
+\subsection{Uses}
+
+N/A
+
+\subsection{Syntax}
+
+\subsubsection{Exported Access Programs}
+
+\begin{center}
+\begin{tabular}{p{2cm} p{8cm} p{2cm} p{2cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+plot & $d_i:\mathbb{R} \rightarrow \mathbb{R},
+                 L_i:\mathbb{R} \rightarrow \mathbb{R},
+                 $ & - & - \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+None
+
+\subsubsection{Environment Variables}
+
+will display on MATLAB within it own graph\\
+
+\subsubsection{Assumptions}
+
+None
+
+\subsubsection{Access Routine Semantics}
+
+\noindent plot($d_i$, $L_i$):
+\begin{itemize}
+\item transition: To display a plot where the vertical axis
+  The power consumption distribution and the horizontal axis is the distance between data centers and power stations.  
+\item exception: none
+\end{itemize}
+
+\newpage
+
+\section{MIS of Output Module} \label{Output}
+
+\subsection{Module}
+
+output
+
+\subsection{Uses}
+
+Param (Section~\ref{Parameters})
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+totalcost: integer
+
+\subsubsection{Exported Access Program}
+
+\begin{center}
+\begin{tabular}{p{3cm} p{7cm} p{2cm} p{2cm}}
+\hline
+\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
+\hline
+output & filename: string, $C_T:\mathbb{R} \rightarrow \mathbb{R},
+                 L_i:\mathbb{R} \rightarrow \mathbb{R},
+                 P_i:\mathbb{R} \rightarrow \mathbb{R},
+       R_i:\mathbb{R} \rightarrow \mathbb{R}$, $L_T: \mathbb{R}$ & - & - \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+None
+
+\subsubsection{Environment Variables}
+
+file: A text file
+
+\subsubsection{Access Routine Semantics}
+
+\noindent output(filename, $C_T$, $L_i$, $L_T$, $R_i$, $P_i$):
+\begin{itemize}
+\item transition:  Write and export the result into a file the
+  following: the input
+    parameters from Param, and the calculated values $C_T, L_i, R_i,
+    P_i$.  The functions will be output as
+    sequences in this file.  The spacing between points in the sequence should
+    be selected so that the heating behaviour is captured in the data.
+\item exception: none
+\end{itemize}
+
+\newpage
+
+\section{MIS of Specification Parameters} \label{SpecParam}
+
+The secrets of this module is the value of the specification parameters.
+
+\subsection{Module}
+
+SpecParam
+
+\subsection{Uses}
+
+N/A
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable*}[l]{l} 
+\# Some Default Value\\
+  $L_\text{max}$ := 6\\
+  $L_T$ := 10\\
+  $C_r$ := 0.041 \\
+  $C_p$ := 0.009 \\
+  $N$ := 5\\
+  $d_1$ := 10 \\
+  $d_2$ := 20\\
+  $d_3$ := 30\\
+  $d_4$ := 40 \\
+  $d_5$ := 50\\
+  
+\end{longtable*}
+
+
+
+\subsection{Semantics}
+
+N/A
 
 \newpage
 
 \bibliographystyle {plainnat}
-\bibliography {../../../refs/References}
+\bibliography {MIS}
 
 \newpage
 
 \section{Appendix} \label{Appendix}
 
-\wss{Extra information if required}
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{l p{12cm}}
+\caption{Possible Exceptions} \\
+\toprule
+\textbf{Message ID} & \textbf{Error Message} \\
+\midrule
+badValue & Error: Input Value must be $> 0$ \\
+linprog & Error: no feasible region \\
+Error: Wrong input type \\
+
+\bottomrule
+\end{longtable}
+
 
 \end{document}
