@@ -55,6 +55,17 @@ urlcolor=cyan          % color of external links
 
 \newpage
 
+\section{Revision History}
+
+\begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
+\toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
+\midrule
+March 12, 2023 & 1.0 & First Draft\\
+May 2, 2023 & 1.1 & Revision 1\\
+\bottomrule
+\end{tabularx}
+
+\newpage
 \section{Introduction}
 
 Decomposing a system into modules is a commonly accepted approach to developing
@@ -123,21 +134,17 @@ adapted here is called design for
 change. Anticipated changes are numbered by \textbf{AC} followed by a number.
 
 \begin{description}
-\item[\refstepcounter{acnum} \actheacnum \label{acHardware}:] Increase or decrease in the number of data centers.
-\item[\refstepcounter{acnum} \actheacnum \label{acInput}:] Changes in the total power consumption.
-\item[\refstepcounter{acnum} \actheacnum \label{acParams}:] Changes in the distance between the power station and the data centers.
-\item[\refstepcounter{acnum} \actheacnum \label{acVerify}:] Changes in the maximum power consumption per data center.
-\item[\refstepcounter{acnum} \actheacnum \label{acOutput}:] Changes in the power loss due to distance.
+
+\item[\refstepcounter{acnum} \actheacnum \label{acParams}:] Change in the distance between the power station and the data centers.
+\item[\refstepcounter{acnum} \actheacnum \label{acVerify}:] Change in the maximum power consumption per data center.
+\item[\refstepcounter{acnum} \actheacnum \label{acOutput}:] Change in the power loss due to the function.
 \item[\refstepcounter{acnum} \actheacnum \label{acVerifyOut}:] The constraints on the output results.
 \item[\refstepcounter{acnum} \actheacnum \label{acODEs}:] Add more detailed comments to explain the purpose of each block of code and how it works.
-\item[\refstepcounter{acnum} \actheacnum \label{acEnergy}:] Use more descriptive variable names to improve readability.
-\item[\refstepcounter{acnum} \actheacnum \label{acControl}:] Add input validation to ensure that the user enters a valid number for the number of data centers.
+
 \item[\refstepcounter{acnum} \actheacnum \label{acSeqDS}:]Use a try-catch block to handle input errors and prevent the program from crashing.
 \item[\refstepcounter{acnum} \actheacnum \label{acSolver}:] The algorithm used
   for the minimization analysis.
 \item[\refstepcounter{acnum} \actheacnum \label{acPlot}:] Add a default value for the number of data centers in case the user does not enter a value.
-\item[\refstepcounter{acnum} \actheacnum \label{ac2}:] Add error handling for cases where the number of data centers is too large or too small.
-\item[\refstepcounter{acnum} \actheacnum \label{ac3}:] Add a function to calculate the power loss due to distance based on a formula rather than a constant value.
 \item[\refstepcounter{acnum} \actheacnum \label{ac4}:] Add a function to calculate the cost for each data center based on the renewable energy rate, grid energy rate, and power consumption.
 \item[\refstepcounter{acnum} \actheacnum \label{ac5}:] Add error handling for cases where the optimization fails to find a solution.
 \item[\refstepcounter{acnum} \actheacnum \label{ac6}:] Add a function to check the total power consumption and display a warning if it is less than the assigned power for any data center.
@@ -166,8 +173,8 @@ calculation module and the output module. Unlikely changes are numbered by \text
 followed by a number.
 
 \begin{description}
-\item[\refstepcounter{ucnum} \uctheucnum \label{ucIO}:] Input devices, only accept csv file, other type not looks like acceptable.
-\item[\refstepcounter{ucnum} \uctheucnum \label{ucInput}:] Remove the check for valid distance values between 0 and 2000.
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucIO}:] Input variable type.
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucInput}:] Remove the check for valid distance values limitation.
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucOutput}:] Change the renewable energy rate to a fixed value instead of a variable input.
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucGoal}:] Remove the calculation of power loss due to distance.
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucODEstructure}:] Change the max load input to be less than the total load input.
@@ -272,8 +279,8 @@ selected.
 \subsubsection{Input Parameter Module (\mref{mParams})}
 
 \begin{description}
-\item[Secrets:] The CSV file containing input parameters, the system of files for input data.
-\item[Services:] read_input_csv() function to read the input CSV file and return a table of input parameters from users (including 
+\item[Secrets:] The input file containing input parameters, the system of files for input data.
+\item[Services:] read input file function to read the input CSV file and return a table of input parameters from users (including 
   a number of data centers, distances, renewable rate, grid power rate and total power consumption), stores input and verifies that the input parameters comply with software constraints. Throws an error if a parameter violates a physical constraint.
 \item[Implemented By:] DCMCA
 \end{description} 
@@ -298,7 +305,7 @@ selected.
 \subsubsection{Output Verification Module (\mref{mVerifyOut})}
 
 \begin{description}
-\item[Secrets:] The algorithm used to approximate expected results.
+\item[Secrets:] The algorithm used to check and validate the outputs.
 \item[Services:] Verifies that the output results follow by checking if the sum of power assigned to each data center exceeds total power consumption.
 \item[Implemented By:] DCMCA
 \end{description}
@@ -307,7 +314,7 @@ selected.
 \subsubsection{Optimization Module (\mref{mEnergy})}
 
 \begin{description}
-\item[Secrets:] The algorithms for solving the minimization cost analysis. The input parameters include the number of data centers, distances, rates of renewable and grid energy, and maximum and total power consumption. 
+\item[Secrets:] The algorithms for solving the minimization cost analysis. Use linear optimization function MATLAB to get the result.
 \item[Services:] Defines the minimization equations set up and solves the linear programming problem to find the optimal power consumption.
 \item[Implemented By:] MATLAB
 \end{description} 
@@ -384,21 +391,15 @@ R10 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}\\
 \toprule
 \textbf{AC} & \textbf{Modules}\\
 \midrule
-\acref{acHardware} & \mref{mHH}\\
-\acref{acInput} & \mref{mHH}\\ %\mref{mInput}\\
+
+
 \acref{acParams} & \mref{mHH}\\
 \acref{acVerify} & \mref{mOutput}\\ %\mref{mVerify}\\
 \acref{acOutput} & \mref{mOutput}\\
 \acref{acVerifyOut} & \mref{mVerifyOut}\\
-\acref{acODEs} & \mref{mODEs}\\
-\acref{acEnergy} & \mref{mParams}\\
-\acref{acControl} & \mref{mParams}\\
 \acref{acSeqDS} & \mref{mSeqDS}\\
 \acref{acSolver} & \mref{mControl}\\
 \acref{acPlot} & \mref{mPlot}\\
-%\acref{ac1} & \mref{mPlot}\\
-\acref{ac2} & \mref{mControl}\\
-\acref{ac3} & \mref{mControl}\\
 \acref{ac4} & \mref{mControl}\\
 \acref{ac5} & \mref{mPlot}\\
 \acref{ac6} & \mref{mParams}\\
